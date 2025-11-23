@@ -11,11 +11,13 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
 
-// CORS
+// CORS (Allow ONLY your frontend)
+var frontendUrl = "https://mango-sand-058a21a00.3.azurestaticapps.net";
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAll",
-        policy => policy.AllowAnyOrigin()
+    options.AddPolicy("AllowFrontend",
+        policy => policy.WithOrigins(frontendUrl)
                         .AllowAnyHeader()
                         .AllowAnyMethod());
 });
@@ -47,13 +49,14 @@ using (var scope = app.Services.CreateScope())
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// Disable HTTPS redirect on Azure
+// Disable HTTPS redirect except local
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
-app.UseCors("AllowAll");
+// Apply CORS policy
+app.UseCors("AllowFrontend");
 
 app.UseAuthorization();
 
