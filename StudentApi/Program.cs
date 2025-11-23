@@ -31,35 +31,32 @@ builder.Services.AddSwaggerGen(options =>
     });
 });
 
-// DbContext (SQLite)
+// SQLite DbContext
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 var app = builder.Build();
 
-// Automatically create SQLite DB if missing
+// Run Migrations Automatically
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.EnsureCreated();   // <-- IMPORTANT
+    db.Database.Migrate();       // <---- IMPORTANT
 }
 
-// Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// Azure handles HTTPS — keep redirection only for local dev
+// Disable HTTPS redirect on Azure
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
 }
 
-// CORS
 app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
-// Controllers
 app.MapControllers();
 
 app.Run();
