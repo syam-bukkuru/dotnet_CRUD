@@ -1,5 +1,6 @@
-const BASE_URL = "http://localhost:5064/api/students";
+const BASE_URL = process.env.REACT_APP_API_URL;
 
+// GET all students
 export const getStudents = async () => {
   const res = await fetch(BASE_URL);
 
@@ -7,6 +8,7 @@ export const getStudents = async () => {
   return res.json();
 };
 
+// CREATE student
 export const createStudent = async (student) => {
   const res = await fetch(BASE_URL, {
     method: "POST",
@@ -18,6 +20,7 @@ export const createStudent = async (student) => {
   return res.json();
 };
 
+// UPDATE student
 export const updateStudent = async (id, student) => {
   const res = await fetch(`${BASE_URL}/${id}`, {
     method: "PUT",
@@ -29,6 +32,7 @@ export const updateStudent = async (id, student) => {
   return res.json();
 };
 
+// DELETE student
 export const deleteStudent = async (id) => {
   const res = await fetch(`${BASE_URL}/${id}`, { method: "DELETE" });
 
