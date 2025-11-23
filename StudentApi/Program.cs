@@ -37,11 +37,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 var app = builder.Build();
 
+// Automatically create SQLite DB if missing
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();   // <-- IMPORTANT
+}
+
 // Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
 
-// IMPORTANT: Disable HTTPS redirection on Azure App Service
+// Azure handles HTTPS — keep redirection only for local dev
 if (app.Environment.IsDevelopment())
 {
     app.UseHttpsRedirection();
