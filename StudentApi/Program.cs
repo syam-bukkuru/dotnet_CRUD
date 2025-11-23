@@ -4,14 +4,14 @@ using StudentApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container
+// Controllers
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
-        options.JsonSerializerOptions.PropertyNamingPolicy = null; // optional (keeps your model names same as DB)
+        options.JsonSerializerOptions.PropertyNamingPolicy = null;
     });
 
-// Enable CORS (optional but recommended)
+// CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll",
@@ -20,40 +20,39 @@ builder.Services.AddCors(options =>
                         .AllowAnyMethod());
 });
 
-// Swagger configuration
+// Swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Student API",
-        Version = "v1",
-        Description = "Student Management API using SQL Server & ASP.NET Core"
+        Version = "v1"
     });
 });
 
-// Register DbContext
+// DbContext (SQLite)
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-
 var app = builder.Build();
 
-// Middleware pipeline
+// Swagger
 app.UseSwagger();
-app.UseSwaggerUI(options =>
+app.UseSwaggerUI();
+
+// IMPORTANT: Disable HTTPS redirection on Azure App Service
+if (app.Environment.IsDevelopment())
 {
-    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Student API v1");
-    options.RoutePrefix = string.Empty; // API opens at root: https://localhost:xxxx/
-});
+    app.UseHttpsRedirection();
+}
 
-app.UseHttpsRedirection();
-
-// Enable CORS globally
+// CORS
 app.UseCors("AllowAll");
 
 app.UseAuthorization();
 
+// Controllers
 app.MapControllers();
 
 app.Run();
