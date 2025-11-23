@@ -1,4 +1,4 @@
-const BASE_URL = process.env.REACT_APP_API_URL;
+const BASE_URL = process.env.VITE_API_URL;
 
 // GET all students
 export const getStudents = async () => {
